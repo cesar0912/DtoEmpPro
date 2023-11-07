@@ -1,5 +1,9 @@
 package classes;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,9 +26,14 @@ public class Empleado {
 	
 	private Double salario;
 	
+	private Date nacimiento;
+	
 	@ManyToOne()
 	@JoinColumn(name="departamento")
 	private Departamento departamento;
+	
+	@ManyToMany(mappedBy="proyectos")
+	 private Set<Proyecto> proyectos = new HashSet<>();
 		
 	public Empleado(int id, String nombre) {
 		this.id = id;
