@@ -20,7 +20,7 @@ public class Departamento {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer id;
+	private UUID id;
 	
 	private String nombre;
 	
@@ -28,23 +28,17 @@ public class Departamento {
 //	@OneToMany(mappedBy = "departamento", orphanRemoval = true)
     private Set<Empleado> empleados = new HashSet<>();
 
-	public Departamento(Integer id, String nombre) {
-		this.id = id;
+	public Departamento(String nombre) {
+		this.id = UUID.randomUUID();
 		this.nombre = nombre;
-	}
+		this.empleados=null;	}
 	
-	public Departamento(Integer id) {
+	public Departamento(UUID id) {
 		this.id = id;
 	}
-
 	public void addEmpleado(Empleado e) {
-		if (e.getDepartamento() != null) {
-			e.getDepartamento().getEmpleados().remove(e);
-		}
-		e.setDepartamento(this);
 		empleados.add(e);
-	}
-	
+    }
 	public void removeEmpleado(Empleado e) {
 		e.setDepartamento(null);
 		empleados.remove(e);

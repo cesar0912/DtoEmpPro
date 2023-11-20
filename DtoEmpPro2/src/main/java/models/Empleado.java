@@ -1,8 +1,10 @@
 package models;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,13 +22,13 @@ public class Empleado {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer id;
+	private UUID id;
 	
 	private String nombre;
 	
 	private Double salario;
 	
-	private Date nacimiento;
+	private LocalDate nacimiento;
 	
 	@ManyToOne()
 	@JoinColumn(name="departamento")
@@ -35,9 +37,13 @@ public class Empleado {
 	@ManyToMany(mappedBy="proyectos")
 	 private Set<Proyecto> proyectos = new HashSet<>();
 		
-	public Empleado(int id, String nombre) {
-		this.id = id;
+	public Empleado(String nombre, Double salario, LocalDate nacimiento) {
+		this.id = UUID.randomUUID();
 		this.nombre = nombre;
+		this.salario=salario;
+		this.nacimiento=nacimiento;
+		this.departamento=null;
+		this.proyectos=null;
 	}
 			
 	@Override
@@ -45,12 +51,13 @@ public class Empleado {
 		String dep = departamento == null ? "¿?" : departamento.getNombre();
 		return String.format("Empleado     [%-2d %-25s %s]", id, nombre, dep);
 	}
-	
-	@Override
-	public int hashCode() {
-		return id;
+	public void addProyecto(Proyecto e) {
+		proyectos.add(e);
+    }
+	public void removeProyecto(Proyecto p) {
+		p.setEmpleados(null);
+		proyectos.remove(p);
 	}
-	
 	public boolean equals(Empleado e) {
 		return e != null && e.getId() != null && e.getId() == id;
 	}
