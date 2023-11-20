@@ -1,3 +1,9 @@
+
+import java.util.logging.*;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,7 +20,14 @@ import repositories.Proyecto.ProRepositoryImpl;
 
 public class Main {
 	public static void main(String[] args) {
+  Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
+
+
+		em = Persistence.createEntityManagerFactory("unidad-persistencia").createEntityManager();
+
+		showResult("Inicial");
+		em.getTransaction().begin();
 
 		List<String> opciones = List.of("1: Mostrar departamentos", "2: Mostrar empleados","3: Mostrar proyectos",
 				"4: Añadir departamento","5: Añadir empleado","6: Añadir proyectos",
@@ -107,6 +120,12 @@ public class Main {
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();
 		return new Departamento(nombre);
+	}
+  private static void showResult(String msg) {
+		System.out.println("* " + msg);
+		em.createQuery("FROM Departamento").getResultList().forEach(System.out::println);
+		em.createQuery("FROM Empleado").getResultList().forEach(System.out::println);
+		System.out.println("-".repeat(80));
 	}
 
 }

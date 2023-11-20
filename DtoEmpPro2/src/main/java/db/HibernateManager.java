@@ -35,4 +35,5 @@ public class HibernateManager {
         entityManagerFactory.close();
     }
 
+
 }

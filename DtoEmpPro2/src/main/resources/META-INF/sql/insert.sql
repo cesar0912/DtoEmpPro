@@ -1,2 +1,0 @@
-INSERT INTO hib_departamento (nombre) VALUES ('Finanzas'), ('Linux'), ('Ventas');
-INSERT INTO hib_empleado (nombre, salario, departamento) VALUES ('Ana Arias', NULL, 1), ('Luis Leiva', '1234.56', 3), ('Milena Mira', NULL, 3);

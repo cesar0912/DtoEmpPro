@@ -25,7 +25,6 @@ public class Departamento {
 	private String nombre;
 	
 	@OneToMany(mappedBy = "departamento")
-//	@OneToMany(mappedBy = "departamento", orphanRemoval = true)
     private Set<Empleado> empleados = new HashSet<>();
 
 	public Departamento(String nombre) {

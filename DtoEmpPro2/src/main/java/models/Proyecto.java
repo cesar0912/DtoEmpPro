@@ -1,14 +1,15 @@
 package models;
 
+import java.util.Date;
 import java.util.HashSet;
 
 import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
 @Entity
@@ -23,7 +24,7 @@ public class Proyecto {
 	@Column(nullable = false)
 	private String nombre;
 	
-	@ManyToMany(mappedBy="empleados")
+	@ManyToMany(mappedBy="proyecto")
 	 private Set<Empleado> empleados = new HashSet<>();
 	
 	public void setEmpleados(Empleado e) {
