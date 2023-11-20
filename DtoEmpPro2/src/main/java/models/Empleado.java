@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "hib_empleado")
 @NamedQuery(name="Empleado.noDepartamento", 
-query="SELECT e FROM Empleado e WHERE e.departamento IS NULL")
+	query="SELECT e FROM Empleado e WHERE e.departamento IS NULL")
+
 public class Empleado {
 	
 	@Id
@@ -32,7 +33,7 @@ public class Empleado {
 	@JoinColumn(name="departamento")
 	private Departamento departamento;
 	
-	@ManyToMany(mappedBy="proyectos")
+	@ManyToMany(mappedBy="empleado")
 	 private Set<Proyecto> proyectos = new HashSet<>();
 		
 	public Empleado(int id, String nombre) {
