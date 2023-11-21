@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import controllers.OficinaController;
 import io.IO;
@@ -19,8 +20,9 @@ import repositories.Empleado.EmpRepositoryImpl;
 import repositories.Proyecto.ProRepositoryImpl;
 
 public class Main {
+	static EntityManager em=null;
 	public static void main(String[] args) {
-  Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
 
 
@@ -70,10 +72,10 @@ public class Main {
 				controller.deleteDepartamento(eliminarDep());
 				break;
 			case 8:
-				controller.deleteEmpleado(null);
+				controller.deleteEmpleado(eliminarEmp());
 				break;
 			case 9:
-				controller.deleteProyecto(null);
+				controller.deleteProyecto(eliminarPro());
 				break;
 			/*case 10:
 				modificar(dep, emp);
@@ -94,10 +96,23 @@ public class Main {
 	}
 
 	private static Departamento eliminarDep() {
-		// TODO Auto-generated method stub
-		return null;
+		IO.print("UUID ? ");
+		String id = IO.readString();
+		UUID uuid=UUID.fromString(id); 
+		return new Departamento(uuid);
 	}
-
+	private static Empleado eliminarEmp() {
+		IO.print("UUID ? ");
+		String id = IO.readString();
+		UUID uuid=UUID.fromString(id); 
+		return new Empleado(uuid);
+	}
+	private static Proyecto eliminarPro() {
+		IO.print("UUID ? ");
+		String id = IO.readString();
+		UUID uuid=UUID.fromString(id); 
+		return new Proyecto(uuid);
+	}
 	private static Proyecto anadirPro() {
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();
@@ -123,8 +138,11 @@ public class Main {
 	}
   private static void showResult(String msg) {
 		System.out.println("* " + msg);
-		em.createQuery("FROM Departamento").getResultList().forEach(System.out::println);
-		em.createQuery("FROM Empleado").getResultList().forEach(System.out::println);
+		em.createNamedQuery("Departamento.findAll", Departamento.class).getResultList().forEach(System.out::println);
+		em.createQuery("FROM Empleado e LEFT JOIN FETCH e.proyectos", Empleado.class).getResultList().forEach(System.out::println);
+		em.createQuery("FROM Proyecto p LEFT JOIN FETCH p.empleados", Proyecto.class)
+	    .getResultList()
+	    .forEach(System.out::println);
 		System.out.println("-".repeat(80));
 	}
 

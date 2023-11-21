@@ -10,17 +10,21 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.hibernate.Hibernate;
+
 
 public class EmpRepositoryImpl implements EmpInterface{
 	private final Logger logger = Logger.getLogger(EmpRepositoryImpl.class.getName());
 
-    @Override
+	@Override
     public List<Empleado> findAll() {  
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Empleado> query = hb.getManager().createNamedQuery("Raqueta.findAll", Empleado.class);
+        TypedQuery<Empleado> query = hb.getManager().createNamedQuery("Empleado.findAll", Empleado.class);
         List<Empleado> list = query.getResultList();
+        list.forEach(e -> Hibernate.initialize(e.getProyectos()));
+
         hb.close();
         return list;
     }
@@ -30,9 +34,12 @@ public class EmpRepositoryImpl implements EmpInterface{
         logger.info("findById()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        Optional<Empleado> raqueta = Optional.ofNullable(hb.getManager().find(Empleado.class, uuid));
+        Optional<Empleado> empleado = Optional.ofNullable(hb.getManager().find(Empleado.class, uuid));
+
+        empleado.ifPresent(e -> Hibernate.initialize(e.getProyectos()));
+
         hb.close();
-        return raqueta;
+        return empleado;
     }
 
     @Override
@@ -66,7 +73,6 @@ public class EmpRepositoryImpl implements EmpInterface{
         hb.open();
         try {
             hb.getTransaction().begin();
-            // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
             entity = hb.getManager().find(Empleado.class, entity.getId());
             hb.getManager().remove(entity);
             hb.getTransaction().commit();

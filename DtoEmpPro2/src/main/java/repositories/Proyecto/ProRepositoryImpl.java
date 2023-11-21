@@ -10,17 +10,21 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.hibernate.Hibernate;
+
 
 public class ProRepositoryImpl implements ProInterface{
 	private final Logger logger = Logger.getLogger(ProRepositoryImpl.class.getName());
 
-    @Override
-    public List<Proyecto> findAll() { 
+	@Override
+    public List<Proyecto> findAll() {  
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Proyecto> query = hb.getManager().createNamedQuery("Raqueta.findAll", Proyecto.class);
+        TypedQuery<Proyecto> query = hb.getManager().createNamedQuery("Proyecto.findAll", Proyecto.class);
         List<Proyecto> list = query.getResultList();
+        list.forEach(p -> Hibernate.initialize(p.getEmpleados()));
+
         hb.close();
         return list;
     }

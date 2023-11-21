@@ -2,6 +2,7 @@ package repositories.Departamento;
 
 import db.HibernateManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import models.*;
 
 import java.lang.System.Logger.Level;
@@ -19,7 +20,7 @@ public class DepRepositoryImpl implements DepInterface{
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Departamento> query = hb.getManager().createNamedQuery("Raqueta.findAll", Departamento.class);
+        TypedQuery<Departamento> query = hb.getManager().createNamedQuery("Departamento.findAll", Departamento.class);
         List<Departamento> list = query.getResultList();
         hb.close();
         return list;
@@ -34,7 +35,7 @@ public class DepRepositoryImpl implements DepInterface{
         hb.close();
         return raqueta;
     }
-
+    
     @Override
     public Departamento save(Departamento entity) {
         logger.info("save()");
@@ -43,17 +44,21 @@ public class DepRepositoryImpl implements DepInterface{
         hb.getTransaction().begin();
 
         try {
-            hb.getManager().merge(entity);
+            if (entity.getId() == null) {
+                hb.getManager().persist(entity);
+            } else {
+                entity = hb.getManager().merge(entity);
+            }
             hb.getTransaction().commit();
             hb.close();
             return entity;
 
         } catch (Exception e) {
-            System.out.println("Error al salvar raqueta con uuid: " + entity.getId() + "\n" + e.getMessage());
+            System.out.println("Error al salvar departamento con uuid: " + entity.getId() + "\n" + e.getMessage());
+            e.printStackTrace();
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
-               
             }
         } 
         return null;
@@ -73,7 +78,7 @@ public class DepRepositoryImpl implements DepInterface{
             hb.close();
             return true;
         } catch (Exception e) {
-            System.out.println("Error al eliminar tenista con uuid: " + entity.getId() + " - " + e.getMessage());
+            System.out.println("Error al eliminar departamento con uuid: " + entity.getId() + " - " + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
