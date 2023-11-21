@@ -23,29 +23,33 @@ import lombok.NoArgsConstructor;
             query="SELECT DISTINCT d FROM Empleado e JOIN e.departamento d WHERE e.id = :id")
 })
 public class Departamento {
-
-	@Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "id", columnDefinition = "BINARY(16)")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
-	
-	private String nombre;
-	
-	@OneToMany(mappedBy = "departamento", fetch = FetchType.EAGER)
-	private Set<Empleado> empleados = new HashSet<>();
 
-	public Departamento(String nombre) {
-		this.id = UUID.randomUUID();
-		this.nombre = nombre;	
-		}
-	
+    @Column(name = "nombre")
+    private String nombre;
+
+    // Relación OneToMany con la entidad Empleado
+    @OneToMany(mappedBy = "departamento",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Empleado> empleados = new HashSet<>();
+
+	public Departamento(String nombre, Empleado empleado) {
+	    this.id = UUID.randomUUID();
+	    this.nombre = nombre;
+	    if (empleado != null) {
+	        empleados.add(empleado);
+	        empleado.setDepartamento(this);
+	    }
+	}
 	public Departamento(UUID id) {
 		this.id = id;
 	}
 	public void addEmpleado(Empleado e) {
-		empleados.add(e);
-    }
+	    empleados.add(e);
+	    e.setDepartamento(this);
+	}
 	public void removeEmpleado(Empleado e) {
 		e.setDepartamento(null);
 		empleados.remove(e);
@@ -53,8 +57,8 @@ public class Departamento {
 	
 	@Override
 	public String toString() {
-	    List<String> emps = empleados.stream()
-	            .map(e -> e.getNombre())
+	    List<UUID> emps = empleados.stream()
+	            .map(e -> e.getId())
 	            .sorted()
 	            .collect(Collectors.toList()); 
 	    return String.format("Departamento [%s, %s, %s]", id, nombre, emps);

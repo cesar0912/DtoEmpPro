@@ -32,10 +32,8 @@ public class Main {
 		em.getTransaction().begin();
 
 		List<String> opciones = List.of("1: Mostrar departamentos", "2: Mostrar empleados","3: Mostrar proyectos",
-				"4: Añadir departamento","5: Añadir empleado","6: Añadir proyectos",
-				"7: Eliminar departamento", "8: Eliminar empleado", "9: Eliminar proyecto",
-				"10: Modificar departamento","11: Modificar empleado","13: Modificar proyecto",
-				"13: Salir");
+				"4: Añadir departamento","5: Añadir empleado","6: Añadir proyectos\n7: Eliminar departamento", "8: Eliminar empleado", "9: Eliminar proyecto",
+				"10: Modificar departamento","11: Modificar empleado","12: Modificar proyecto\n13: Salir");
 		var controller = new OficinaController(
                 new DepRepositoryImpl(),
                 new EmpRepositoryImpl(),
@@ -67,7 +65,6 @@ public class Main {
 			case 6:
 				controller.createProyecto(anadirPro());
 				break;
-				
 			case 7:
 				controller.deleteDepartamento(eliminarDep());
 				break;
@@ -98,7 +95,7 @@ public class Main {
 	private static Departamento eliminarDep() {
 		IO.print("UUID ? ");
 		String id = IO.readString();
-		UUID uuid=UUID.fromString(id); 
+		UUID uuid=UUID.fromString(id);
 		return new Departamento(uuid);
 	}
 	private static Empleado eliminarEmp() {
@@ -131,18 +128,24 @@ public class Main {
 	}
 
 	private static Departamento anadirDep() {
-		// TODO Auto-generated method stub
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();
-		return new Departamento(nombre);
+		IO.print("UUID del jefe ? ");
+		String id = IO.readString();
+		if(id=="") {
+			UUID vacio=null;
+			return new Departamento(nombre,new Empleado(vacio));
+		}
+		UUID uuid=UUID.fromString(id);
+		return new Departamento(nombre,new Empleado(uuid));
 	}
   private static void showResult(String msg) {
 		System.out.println("* " + msg);
 		em.createNamedQuery("Departamento.findAll", Departamento.class).getResultList().forEach(System.out::println);
-		em.createQuery("FROM Empleado e LEFT JOIN FETCH e.proyectos", Empleado.class).getResultList().forEach(System.out::println);
-		em.createQuery("FROM Proyecto p LEFT JOIN FETCH p.empleados", Proyecto.class)
-	    .getResultList()
-	    .forEach(System.out::println);
+		em.createQuery("FROM Empleado p LEFT JOIN FETCH p.proyectos", Empleado.class).getResultList().forEach(System.out::println);
+		em.createQuery("FROM Proyecto p LEFT JOIN FETCH p.empleados", Proyecto.class).getResultList().forEach(System.out::println);
+
+	    
 		System.out.println("-".repeat(80));
 	}
 

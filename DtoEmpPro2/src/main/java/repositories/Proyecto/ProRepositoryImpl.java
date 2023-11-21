@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.hibernate.Hibernate;
-
+import java.util.*;
 
 public class ProRepositoryImpl implements ProInterface{
 	private final Logger logger = Logger.getLogger(ProRepositoryImpl.class.getName());
@@ -39,29 +39,50 @@ public class ProRepositoryImpl implements ProInterface{
         return raqueta;
     }
 
-    @Override
     public Proyecto save(Proyecto entity) {
-        logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        hb.getTransaction().begin();
 
-        try {
-            hb.getManager().merge(entity);
+        try (AutoCloseable resourceManager = hb::close) {
+            hb.getTransaction().begin();
+
+            // Manejar relación ManyToMany con Empleado
+            Set<Empleado> empleados = entity.getEmpleados();
+            for (Empleado empleado : empleados) {
+                if (empleado.getId() != null) {
+                    if (!existsInDatabase(empleado.getId(), Empleado.class, hb)) {
+                        throw new Exception("Empleado con UUID " + empleado.getId() + " no encontrado.");
+                    } else {
+                        Empleado e = hb.getManager().find(Empleado.class, empleado.getId());
+                        entity.agregarEmpleado(e);
+                    }
+                } else {
+                    entity.setEmpleados(null);
+                }
+            }
+
+            if (entity.getId() == null) {
+                hb.getManager().persist(entity);
+            } else {
+                entity = hb.getManager().merge(entity);
+            }
+
             hb.getTransaction().commit();
-            hb.close();
             return entity;
-
         } catch (Exception e) {
-            System.out.println("Error al salvar raqueta con uuid: " + entity.getId() + "\n" + e.getMessage());
-        } finally {
+            System.out.println("Error al salvar proyecto con uuid: " + entity.getId() + " " + e.getMessage());
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
-               
             }
-        } 
+        }
+
         return null;
     }
+
+    private static <T> boolean existsInDatabase(UUID id, Class<T> entityClass, HibernateManager hb) {
+        return hb.getManager().find(entityClass, id) != null;
+    }
+
 
     @Override
     public Boolean delete(Proyecto entity) {

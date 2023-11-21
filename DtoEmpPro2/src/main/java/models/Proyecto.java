@@ -21,17 +21,21 @@ import lombok.NoArgsConstructor;
 @Table(name = "hib_proyecto")
 @NamedQuery(name = "Proyecto.findAll", query = "SELECT p FROM Proyecto p")
 public class Proyecto {
-	@Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "id", columnDefinition = "BINARY(16)")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private UUID id;
 
-	@Column(nullable = false)
-	private String nombre;
-	
-	@ManyToMany(mappedBy = "proyectos")
-	private Set<Empleado> empleados = new HashSet<>();
+    @Column(name = "nombre")
+    private String nombre;
+
+    @ManyToMany
+    @JoinTable(
+        name = "hib_empleado_hib_proyecto",
+        joinColumns = @JoinColumn(name = "proyecto_id"),
+        inverseJoinColumns = @JoinColumn(name = "empleado_id")
+    )
+    private Set<Empleado> empleados = new HashSet<>();
 
 
     public Proyecto(String nombre, Set<Empleado> empleados) {
