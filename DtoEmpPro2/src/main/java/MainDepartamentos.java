@@ -59,11 +59,15 @@ public class MainDepartamentos {
 		String nombre = IO.readStringOptional();
 		IO.print("Jefe ? ");
 		UUID jefe = IO.readUUIDOptional();
-
-		Departamento departamento = new Departamento(id, nombre, new Empleado(jefe));
+		Departamento departamento =null;
+		if(jefe==null) {
+			departamento = new Departamento(id, nombre);
+		}else{
+			departamento = new Departamento(id, nombre, new Empleado(jefe));
+		}
 		IO.println(controller.updateDepartamento(departamento) ? "Actualizado correctamente"
 				: "\nRegistro no encontrado o Información no válida\n" + "Asegúrese de:\n"
-						+ "- Haber rellenado al menos 1 campo\n"
+						+ "- Haber rellenado los campos\n"
 						+ "- Que el ID del departamento a modificar exista en la tabla departamento\n"
 						+ "- Que el ID del jefe exista en la tabla empleado");
 	}

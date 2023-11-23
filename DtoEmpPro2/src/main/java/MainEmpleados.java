@@ -85,8 +85,12 @@ public class MainEmpleados {
 		Double salario = IO.readDoubleOptional("Salario?: ");
 		LocalDate nacido = IO.readLocalDateOptional("Nacido ? ");
 		UUID departamento = IO.readUUIDOptional("Departamento ? ");
-
-		Empleado empleado = new Empleado(id, nombre, salario, nacido, new Departamento(departamento));
+		Empleado empleado = null;
+		if (departamento != null) {
+			empleado = new Empleado(id,nombre, salario, nacido, new Departamento(departamento));
+		} else {
+			empleado = new Empleado(id,nombre, salario, nacido);
+		}
 		IO.println(controller.updateEmpleado(empleado) ? "Actualizado correctamente"
 				: "\nRegistro no encontrado o Información no válida\n" + "Asegúrese de:\n"
 						+ "- Haber rellenado al menos 1 campo\n"

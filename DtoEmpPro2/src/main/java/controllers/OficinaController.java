@@ -41,7 +41,7 @@ public class OficinaController {
 
     public Boolean updateDepartamento(Departamento dep) {
         logger.info("Actualizando Departamento con uuid: " + dep.getId());
-        return depRepository.save(dep);
+        return depRepository.update(dep);
     }
 
     public Boolean deleteDepartamento(Departamento dep) {
@@ -65,7 +65,7 @@ public class OficinaController {
 
     public Boolean updateEmpleado(Empleado emp) {
         logger.info("Actualizando Empleado con uuid: " + emp.getId());
-        return empRepository.save(emp);
+        return empRepository.update(emp);
     }
 
     public Boolean deleteEmpleado(Empleado emp) {

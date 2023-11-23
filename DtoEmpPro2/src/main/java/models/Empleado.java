@@ -43,6 +43,13 @@ public class Empleado {
 		setNacido(nacido);
 		setDepartamento(departamento);
 	}
+    public Empleado(UUID id,String nombre, Double salario,LocalDate nacido) {
+    	setId(id);
+		setNombre(nombre);
+		setSalario(salario);
+		setNacido(nacido);
+		setDepartamento(null);
+	}
 	
 	public Empleado(String nombre, Double salario,LocalDate nacido, Departamento departamento) {
 		setId(UUID.randomUUID());
@@ -74,4 +81,5 @@ public class Empleado {
 		String departamentoInfo = (departamento != null) ? departamento.getId() + " | " + departamento.getNombre() : "N/A";
 	    return String.format(format, this.id.toString(), this.nombre, salarioStr, departamentoInfo);
 	}
+
 }

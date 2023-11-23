@@ -6,8 +6,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import db.HibernateManager;
 import exceptions.DepartamentoException;
@@ -48,6 +46,11 @@ public class EmpRepositoryImpl implements EmpInterface{
         hb.getTransaction().begin();
 
         try {
+        	if(entity.getDepartamento()!=null) {
+        		Departamento departamento = null;
+                departamento = hb.getManager().find(Departamento.class, entity.getDepartamento().getId());
+                entity.setDepartamento(departamento);
+        	}
             hb.getManager().merge(entity);
             hb.getTransaction().commit();
             hb.close();
@@ -61,7 +64,62 @@ public class EmpRepositoryImpl implements EmpInterface{
             }
         }
 	}
+	public boolean update(Empleado entity) {
+		logger.info("update()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        hb.getTransaction().begin();
 
+        try {
+        	if(hb.getManager().find(Empleado.class, entity.getId())==null) {
+	        	throw new EmpleadoException("Error al actualizar Empleado. El empleado no existe.");
+	        }
+        	if(entity.getDepartamento()!=null && entity.getDepartamento().getId()!=null) {
+        		Departamento departamento = null;
+        		
+                departamento = hb.getManager().find(Departamento.class, entity.getDepartamento().getId());
+                if(departamento!=null) {
+	                entity.setDepartamento(departamento);
+	                Empleado e = hb.getManager().find(Empleado.class, entity.getId());
+	    	        Departamento departamentoExistente = e.getDepartamento();
+	    	        if(departamentoExistente!=null) {
+	    	        	departamentoExistente.setJefe(null);
+	    	        	hb.getManager().merge(departamentoExistente);
+	    	        	hb.getTransaction().commit();
+	    	        	hb.getManager().clear();
+	    	        	hb.getTransaction().begin();
+	    	        }
+	                
+                }
+        	}else {
+        		Empleado e = hb.getManager().find(Empleado.class, entity.getId());
+    	        Departamento departamento = e.getDepartamento();
+    	        if(departamento!=null) {
+    	        	departamento.setJefe(null);
+    	        	hb.getManager().merge(departamento);
+    	        	hb.getTransaction().commit();
+    	        	hb.getManager().clear();
+    	        	hb.getTransaction().begin();
+    	        }
+                
+        		
+        	}
+        	hb.getTransaction().commit();
+        	hb.getManager().clear();
+        	hb.getTransaction().begin();
+            hb.getManager().merge(entity);
+            hb.getTransaction().commit();
+            hb.close();
+            return true;
+
+        } catch (Exception e) {
+            throw new EmpleadoException("Error al salvar empleado con uuid: " + entity.getId() + "\n" + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+	}
 	@Override
 	public boolean delete(Empleado entity) {
 	    logger.info("delete()");

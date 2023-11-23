@@ -7,8 +7,11 @@ import java.util.logging.Logger;
 
 import db.HibernateManager;
 import exceptions.DepartamentoException;
+import exceptions.EmpleadoException;
 import exceptions.ProyectoException;
 import jakarta.persistence.TypedQuery;
+import models.Departamento;
+import models.Empleado;
 import models.Proyecto;
 
 public class ProRepositoryImpl implements ProInterface{
@@ -54,7 +57,30 @@ public class ProRepositoryImpl implements ProInterface{
             }
         }
 	}
+	@Override
+	public boolean update(Proyecto entity) {
+		logger.info("save()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        hb.getTransaction().begin();
 
+        try {
+            hb.getManager().merge(entity);
+            hb.getTransaction().commit();
+            hb.close();
+            return true;
+
+        } catch (Exception e) {
+            throw new ProyectoException("Error al salvar raqueta con uuid: " + entity.getId() + "\n" + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+	}
+	
+	
+	
 	@Override
 	public boolean delete(Proyecto entity) {
 		logger.info("delete()");

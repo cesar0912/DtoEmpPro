@@ -66,7 +66,44 @@ public class DepRepositoryImpl implements DepInterface{
             }
         }
 	}
+	
+	public boolean update(Departamento departamento) {
+	    logger.info("update()");
+	    HibernateManager hb = HibernateManager.getInstance();
+	    hb.open();
+	    try {
+	        hb.getTransaction().begin();
+	        if(hb.getManager().find(Departamento.class, departamento.getId())==null) {
+	        	throw new DepartamentoException("Error al actualizar departamento. El jefe no existe.");
+	        }
+	        // Verifica si el jefe existe
+	        if (departamento.getJefe() != null && departamento.getJefe().getId() != null) {
+	            Empleado jefe = hb.getManager().find(Empleado.class, departamento.getJefe().getId());
+	            if (jefe == null) {
+	                throw new DepartamentoException("Error al actualizar departamento. El jefe no existe.");
+	            }
+	            departamento.setJefe(jefe);
+	        }
+	        Departamento mergedDepartamento = hb.getManager().merge(departamento);
 
+            if (mergedDepartamento.getJefe() != null) {
+                Empleado jefeActualizado = mergedDepartamento.getJefe();
+                jefeActualizado.setDepartamento(mergedDepartamento);
+                hb.getManager().merge(jefeActualizado); 
+            }
+
+	        hb.getTransaction().commit();
+	        hb.close();
+	        return true;
+	    } catch (Exception e) {
+	        throw new DepartamentoException("Error al actualizar departamento: " + e.getMessage());
+	    } finally {
+	        if (hb.getTransaction().isActive()) {
+	            hb.getTransaction().rollback();
+	        }
+	        hb.close();
+	    }
+	}
 
 	@Override
 	public boolean delete(Departamento entity) {
