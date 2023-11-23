@@ -12,6 +12,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedQuery(name ="Empleado.findAll",
+query="SELECT e FROM Empleado e")
 public class Empleado {
 
     @Id

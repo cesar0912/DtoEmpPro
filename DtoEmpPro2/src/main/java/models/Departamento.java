@@ -11,6 +11,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedQuery(name ="Departamento.findAll",
+query="SELECT d FROM Departamento d")
 public class Departamento {
 
     @Id
@@ -21,7 +23,7 @@ public class Departamento {
     private String nombre;
 
     @ManyToOne
-    @JoinColumn(name = "jefe", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "jefe", nullable = true)
     private Empleado jefe;
 
 
