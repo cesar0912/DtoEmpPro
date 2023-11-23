@@ -1,8 +1,11 @@
 package repositories.Empleado;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -25,7 +28,18 @@ public class EmpRepositoryImpl implements EmpInterface{
         hb.close();
         return list;
 	}
+	 @Override
+	    public Optional<Empleado> findById(UUID uuid) {
+	        logger.info("findById()");
+	        HibernateManager hb = HibernateManager.getInstance();
+	        hb.open();
+	        Optional<Empleado> empleado = Optional.ofNullable(hb.getManager().find(Empleado.class, uuid));
 
+	        empleado.ifPresent(e -> Hibernate.initialize(e.getProyectos()));
+
+	        hb.close();
+	        return empleado;
+	    }
 	@Override
 	public boolean save(Empleado entity) {
 		logger.info("save()");

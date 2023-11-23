@@ -30,7 +30,10 @@ public class OficinaController {
         logger.info("Obteniendo Departamentos");
         return depRepository.findAll();
     }
-
+	public Optional<Departamento> getDepartamentoPorId(UUID id) {
+        logger.info("Obteniendo Departamentos");
+        return depRepository.findById(id);
+    }
     public boolean createDepartamento(Departamento dep) {
         logger.info("Creando Departamento");
         return depRepository.save(dep);
@@ -50,7 +53,10 @@ public class OficinaController {
         logger.info("Obteniendo Empleados");
         return empRepository.findAll();
     }
-
+    public Optional<Empleado> getEmpleadoPorId(UUID id) {
+        logger.info("Obteniendo Empleado");
+        return empRepository.findById(id);
+    }
     public Boolean createEmpleado(Empleado emp) {
         logger.info("Creando Empleado");
         return empRepository.save(emp);
@@ -69,6 +75,10 @@ public class OficinaController {
     public List<Proyecto> getProyectos() {
         logger.info("Obteniendo Proyectos");
         return proRepository.findAll();
+    }
+    public Optional<Proyecto> getProyectoPorId(UUID id) {
+        logger.info("Obteniendo Proyecto");
+        return proRepository.findById(id);
     }
 
     public Boolean createProyecto(Proyecto pro) {

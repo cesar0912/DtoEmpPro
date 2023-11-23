@@ -1,6 +1,8 @@
 package repositories.Departamento;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import db.HibernateManager;
@@ -20,6 +22,15 @@ public class DepRepositoryImpl implements DepInterface{
         List<Departamento> list = query.getResultList();
         hb.close();
         return list;
+	}
+	@Override
+	public Optional<Departamento> findById(UUID uuid) {
+		logger.info("findById()");
+		HibernateManager hb = HibernateManager.getInstance();
+		hb.open();
+		Optional<Departamento> dep = Optional.ofNullable(hb.getManager().find(Departamento.class, uuid));
+		hb.close();
+		return dep;
 	}
 	@Override
 	public boolean save(Departamento entity) {

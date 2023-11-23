@@ -1,6 +1,8 @@
 package repositories.Proyecto;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import db.HibernateManager;
@@ -22,7 +24,15 @@ public class ProRepositoryImpl implements ProInterface{
         hb.close();
         return list;
 	}
-
+	@Override
+    public Optional<Proyecto> findById(UUID uuid) {
+        logger.info("findById()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        Optional<Proyecto> raqueta = Optional.ofNullable(hb.getManager().find(Proyecto.class, uuid));
+        hb.close();
+        return raqueta;
+    }
 	@Override
 	public boolean save(Proyecto entity) {
 		logger.info("save()");
