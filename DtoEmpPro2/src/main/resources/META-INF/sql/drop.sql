@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS hib_empleado_hib_proyecto;
-DROP TABLE IF EXISTS hib_proyecto;
-DROP TABLE IF EXISTS hib_empleado;
-DROP TABLE IF EXISTS hib_departamento;
+ALTER TABLE IF EXISTS empleado DROP FOREIGN KEY IF EXISTS fk_departamento;
+ALTER TABLE IF EXISTS departamento DROP FOREIGN KEY IF EXISTS fk_jefe;
+DROP TABLE IF EXISTS empleado;
+DROP TABLE IF EXISTS departamento;

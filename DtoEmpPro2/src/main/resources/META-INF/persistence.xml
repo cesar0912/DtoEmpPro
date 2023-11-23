@@ -6,18 +6,18 @@
 
     <persistence-unit name="unidad-persistencia" transaction-type="RESOURCE_LOCAL">
         <properties>
-            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.event.merge.entity_copy_observer" value="allow"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect" />
             <!-- datos de conexión a la base de datos -->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://192.168.0.26:3301/gestionProyecto" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://172.20.96.1:3301/gestionProyecto" />
             <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
             <property name="jakarta.persistence.jdbc.user" value="root" />
             <property name="jakarta.persistence.jdbc.password" value="toor" />
             <!-- inicialización de datos de la base de datos -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="none" />
+            <property name="jakarta.persistence.schema-generation.database.action" value="update" />
             <property name="jakarta.persistence.schema-generation.create-source" value="script" />
             <property name="jakarta.persistence.schema-generation.drop-source" value="script" />
             <property name="jakarta.persistence.schema-generation.create-script-source" value="META-INF/sql/create.sql" />

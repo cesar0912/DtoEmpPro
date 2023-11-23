@@ -31,17 +31,12 @@ public class OficinaController {
         return depRepository.findAll();
     }
 
-    public Departamento createDepartamento(Departamento dep) {
+    public boolean createDepartamento(Departamento dep) {
         logger.info("Creando Departamento");
         return depRepository.save(dep);
     }
 
-    public Optional<Departamento> getDepartamentoById(UUID uuid) {
-        logger.info("Obteniendo Departamento con uuid: " + uuid);
-        return depRepository.findById(uuid);
-    }
-
-    public Departamento updateDepartamento(Departamento dep) {
+    public Boolean updateDepartamento(Departamento dep) {
         logger.info("Actualizando Departamento con uuid: " + dep.getId());
         return depRepository.save(dep);
     }
@@ -56,17 +51,13 @@ public class OficinaController {
         return empRepository.findAll();
     }
 
-    public Empleado createEmpleado(Empleado emp) {
+    public Boolean createEmpleado(Empleado emp) {
         logger.info("Creando Empleado");
         return empRepository.save(emp);
     }
 
-    public Optional<Empleado> getEmpleadoById(UUID uuid) {
-        logger.info("Obteniendo Empleado con uuid: " + uuid);
-        return empRepository.findById(uuid);
-    }
 
-    public Empleado updateEmpleado(Empleado emp) {
+    public Boolean updateEmpleado(Empleado emp) {
         logger.info("Actualizando Empleado con uuid: " + emp.getId());
         return empRepository.save(emp);
     }
@@ -80,17 +71,13 @@ public class OficinaController {
         return proRepository.findAll();
     }
 
-    public Proyecto createProyecto(Proyecto pro) {
+    public Boolean createProyecto(Proyecto pro) {
         logger.info("Creando Proyecto");
         return proRepository.save(pro);
     }
 
-    public Optional<Proyecto> getProyectoById(UUID uuid) {
-        logger.info("Obteniendo Proyecto con uuid: " + uuid);
-        return proRepository.findById(uuid);
-    }
 
-    public Proyecto updateProyecto(Proyecto pro) {
+    public Boolean updateProyecto(Proyecto pro) {
         logger.info("Actualizando Proyecto con uuid: " + pro.getId());
         return proRepository.save(pro);
     }

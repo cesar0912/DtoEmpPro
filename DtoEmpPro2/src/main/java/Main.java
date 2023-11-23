@@ -1,11 +1,13 @@
 
 import java.util.logging.*;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -21,6 +23,13 @@ import repositories.Proyecto.ProRepositoryImpl;
 
 public class Main {
 	static EntityManager em=null;
+	static OficinaController controller = new OficinaController(
+                new DepRepositoryImpl(),
+                new EmpRepositoryImpl(),
+                new ProRepositoryImpl()
+                 
+        );
+
 	public static void main(String[] args) {
 		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
 
@@ -34,33 +43,25 @@ public class Main {
 		List<String> opciones = List.of("1: Mostrar departamentos", "2: Mostrar empleados","3: Mostrar proyectos",
 				"4: Añadir departamento","5: Añadir empleado","6: Añadir proyectos\n7: Eliminar departamento", "8: Eliminar empleado", "9: Eliminar proyecto",
 				"10: Modificar departamento","11: Modificar empleado","12: Modificar proyecto\n13: Salir");
-		var controller = new OficinaController(
-                new DepRepositoryImpl(),
-                new EmpRepositoryImpl(),
-                new ProRepositoryImpl()
-                 
-        );
-
+		
 		while (true) {
 			System.out.println(opciones);
 			switch (IO.readInt()) {
 			case 1:
-				var departamentos = controller.getDepartamentos();
-		        departamentos.forEach(System.out::println);
+				listarDepartamentos();
 				break;
 			case 2:
-				var empleados = controller.getEmpleados();
-				empleados.forEach(System.out::println);
+				listarEmpleados();
 				break;
 			case 3:
 				var proyectos = controller.getProyectos();
 				proyectos.forEach(System.out::println);
 				break;
 			case 4:
-				controller.createDepartamento(anadirDep());
+				anadirDep();
 				break;
 			case 5:
-				controller.createEmpleado(anadirEmp());
+				anadirEmp();
 				break;
 			case 6:
 				controller.createProyecto(anadirPro());
@@ -91,6 +92,18 @@ public class Main {
 		}
 
 	}
+	private static void listarEmpleados() {
+		List<Empleado> empleados = controller.getEmpleados().stream()
+                .sorted(Comparator.comparing(Empleado::getNombre))
+                .collect(Collectors.toList());
+        empleados.forEach(System.out::println);
+	}
+	private static void listarDepartamentos() {
+		List<Departamento> departamentos = controller.getDepartamentos().stream()
+                .sorted(Comparator.comparing(Departamento::getNombre))
+                .collect(Collectors.toList());
+        departamentos.forEach(System.out::println);
+	}
 
 	private static Departamento eliminarDep() {
 		IO.print("UUID ? ");
@@ -116,36 +129,32 @@ public class Main {
 		return new Proyecto(nombre);
 	}
 
-	private static Empleado anadirEmp() {
-		IO.print("Nombre ? ");
-		String nombre = IO.readString();
-		IO.print("Salario ? ");
-		Double salario = IO.readDouble();
-		IO.print("fecha nacimiento");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		LocalDate nacimiento = LocalDate.parse(IO.readString(), formatter);
-		return new Empleado(nombre, salario, nacimiento);
+	private static void anadirEmp() {
+		String nombre = IO.readString("Nombre ? ");
+		Double salario = IO.readDoubleOptional("Salario?: ");
+		LocalDate nacido = IO.readLocalDateOptional("Nacimiento?: ");
+		UUID departamento = IO.readUUIDOptional("Departamento ? ");
+		Empleado empleado = new Empleado(nombre, salario,nacido, new Departamento(departamento));
+				
+		IO.println(controller.createEmpleado(empleado) ? "Insertado correctamente" :
+				 "No se ha insertado");
 	}
 
-	private static Departamento anadirDep() {
-		IO.print("Nombre ? ");
-		String nombre = IO.readString();
-		IO.print("UUID del jefe ? ");
-		String id = IO.readString();
-		if(id=="") {
-			UUID vacio=null;
-			return new Departamento(nombre,new Empleado(vacio));
-		}
-		UUID uuid=UUID.fromString(id);
-		return new Departamento(nombre,new Empleado(uuid));
+	private static void anadirDep() {
+		// Obtenemos los datos del departamento que se quiere insertar
+		String nombre = IO.readString("Nombre ? ");
+		UUID jefe = IO.readUUIDOptional("Jefe ? ");
+
+		// Creamos el departamento y lo insertamos
+		Departamento departamento = new Departamento(nombre, new Empleado(jefe));
+				
+		// Comprobamos si se ha insertado el registro y damos feedback
+		IO.println(controller.createDepartamento(departamento) ? "Insertado correctamente" :
+				"No se ha encontrado un empleado con el ID introducido" );
 	}
   private static void showResult(String msg) {
 		System.out.println("* " + msg);
-		em.createNamedQuery("Departamento.findAll", Departamento.class).getResultList().forEach(System.out::println);
-		em.createQuery("FROM Empleado p LEFT JOIN FETCH p.proyectos", Empleado.class).getResultList().forEach(System.out::println);
-		em.createQuery("FROM Proyecto p LEFT JOIN FETCH p.empleados", Proyecto.class).getResultList().forEach(System.out::println);
-
-	    
+		
 		System.out.println("-".repeat(80));
 	}
 
