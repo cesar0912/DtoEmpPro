@@ -64,20 +64,17 @@ public class DepRepositoryImpl implements DepInterface{
 	    hb.open();
 	    try {
 	        hb.getTransaction().begin();
-
-	        // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
 	        entity = hb.getManager().find(Departamento.class, entity.getId());
 
-	        // Actualizar los empleados estableciendo el departamento a null
 	        for (Empleado e : entity.getEmpleados()) {
 	            e.setDepartamento(null);
-	            hb.getManager().persist(e);
+	            hb.getManager().merge(e);
 	        }
 
 	        hb.getTransaction().commit();
-
+	        hb.getManager().clear();
 	        hb.getTransaction().begin();
-
+	        entity = hb.getManager().find(Departamento.class, entity.getId());
 	        hb.getManager().remove(entity);
 
 	        hb.getTransaction().commit();
