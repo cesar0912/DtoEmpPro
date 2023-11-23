@@ -1,43 +1,50 @@
 package models;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
+@Table(name = "departamento")
 @Data
 @NoArgsConstructor
-@Entity(name = "departamento")
-@NamedQuery(name = "Departamento.findAll", query = "SELECT d FROM departamento d")
+@AllArgsConstructor
 public class Departamento {
-	
-	@Id
-	private UUID id = UUID.randomUUID();
-	private String nombre;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "jefe", nullable = true)
-	private Empleado jefe;
-	
-	@OneToMany(mappedBy = "departamento", orphanRemoval = false, cascade = CascadeType.ALL)
-    private Set<Empleado> empleados = new HashSet<>();
+
+    @Id
+    @Column(name = "id")
+    private UUID id;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @ManyToOne
+    @JoinColumn(name = "jefe", nullable = true, insertable = false, updatable = false)
+    private Empleado jefe;
+
+
+    @OneToMany(mappedBy = "departamento", cascade = CascadeType.REMOVE, orphanRemoval = false)
+    private List<Empleado> empleados;
 	
 	public Departamento(UUID id) {
 		setId(id);
 	}
 	
 	public Departamento(String nombre) {
+		setId(UUID.randomUUID());
 		setNombre(nombre);
 	}
 
 	public Departamento(UUID id, String nombre) {
 		setId(id);
 		setNombre(nombre);
+		setJefe(null);
 	}
 	
 	public Departamento(String nombre, Empleado jefe) {
+		setId(UUID.randomUUID());
 		setNombre(nombre);
 		setJefe(jefe);
 	}
@@ -48,7 +55,6 @@ public class Departamento {
 		setJefe(jefe);
 	}
 	
-	// TODO MOSTRAR LISTA DE EMPLEADOS ASOCIADOS A ESE DEPARTAMENTO
 	@Override
 	public String toString() {
 	    String format = "[ %s ][ %s ][ %s ]";

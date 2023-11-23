@@ -1,22 +1,40 @@
 package models;
 
+import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "proyectos")
 @Data
 @NoArgsConstructor
-@Entity(name = "proyecto")
-@NamedQuery(name = "Proyecto.findAll", query = "SELECT d FROM proyecto d")
+@AllArgsConstructor
 public class Proyecto {
 
-	@Id
-	private UUID id = UUID.randomUUID();
-	private String nombre;
+    @Id
+    @Column(name = "id")
+    private UUID id;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @ManyToMany
+    @JoinTable(
+        name = "proyecto_empleado",
+        joinColumns = @JoinColumn(name = "proyecto_id"),
+        inverseJoinColumns = @JoinColumn(name = "empleado_id")
+    )
+    private List<Empleado> empleados;
 	
 	public Proyecto(UUID id) {
 		setId(id);

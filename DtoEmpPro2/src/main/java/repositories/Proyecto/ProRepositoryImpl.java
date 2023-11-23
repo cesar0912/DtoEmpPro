@@ -24,7 +24,7 @@ public class ProRepositoryImpl implements ProInterface{
 	}
 
 	@Override
-	public Boolean save(Proyecto entity) {
+	public boolean save(Proyecto entity) {
 		logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
@@ -46,7 +46,7 @@ public class ProRepositoryImpl implements ProInterface{
 	}
 
 	@Override
-	public Boolean delete(Proyecto entity) {
+	public boolean delete(Proyecto entity) {
 		logger.info("delete()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();

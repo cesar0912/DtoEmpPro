@@ -1,161 +1,229 @@
-
-import java.util.logging.*;
-import java.util.stream.Collectors;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Persistence;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
 import controllers.OficinaController;
 import io.IO;
-import models.Empleado;
-import models.Proyecto;
 import models.Departamento;
+import models.Empleado;
 import repositories.Departamento.DepRepositoryImpl;
 import repositories.Empleado.EmpRepositoryImpl;
 import repositories.Proyecto.ProRepositoryImpl;
 
 public class Main {
-	static EntityManager em=null;
-	static OficinaController controller = new OficinaController(
-                new DepRepositoryImpl(),
-                new EmpRepositoryImpl(),
-                new ProRepositoryImpl()
-                 
-        );
 
-	public static void main(String[] args) {
-		Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
+    private static Scanner scanner = new Scanner(System.in);
+    static OficinaController controller = new OficinaController(
+            new DepRepositoryImpl(),
+            new EmpRepositoryImpl(),
+            new ProRepositoryImpl()
+             
+    );
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("1. Gestiona Empleados");
+            System.out.println("2. Gestiona Proyectos");
+            System.out.println("3. Gestiona Departamentos");
+            System.out.println("0. Exit");
+            System.out.print("Elige: ");
 
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
+            switch (choice) {
+                case 1:
+                    manageEmpleados();
+                    break;
+                case 2:
+                    manageProyectos();
+                    break;
+                case 3:
+                    manageDepartamentos();
+                    break;
+                case 0:
+                    System.out.println("Exiting the program. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
 
-		em = Persistence.createEntityManagerFactory("unidad-persistencia").createEntityManager();
+    private static void manageEmpleados() {
+        while (true) {
+            System.out.println("\n--- Empleado Gestiones ---");
+            System.out.println("1. Guardar Empleado");
+            System.out.println("2. Borrar Empleado");
+            System.out.println("3. Modificar Empleado");
+            System.out.println("0. Volver");
+            System.out.print("Elige: ");
 
-		showResult("Inicial");
-		em.getTransaction().begin();
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
-		List<String> opciones = List.of("1: Mostrar departamentos", "2: Mostrar empleados","3: Mostrar proyectos",
-				"4: Añadir departamento","5: Añadir empleado","6: Añadir proyectos\n7: Eliminar departamento", "8: Eliminar empleado", "9: Eliminar proyecto",
-				"10: Modificar departamento","11: Modificar empleado","12: Modificar proyecto\n13: Salir");
-		
-		while (true) {
-			System.out.println(opciones);
-			switch (IO.readInt()) {
-			case 1:
-				listarDepartamentos();
-				break;
-			case 2:
-				listarEmpleados();
-				break;
-			case 3:
-				var proyectos = controller.getProyectos();
-				proyectos.forEach(System.out::println);
-				break;
-			case 4:
-				anadirDep();
-				break;
-			case 5:
-				anadirEmp();
-				break;
-			case 6:
-				controller.createProyecto(anadirPro());
-				break;
-			case 7:
-				controller.deleteDepartamento(eliminarDep());
-				break;
-			case 8:
-				controller.deleteEmpleado(eliminarEmp());
-				break;
-			case 9:
-				controller.deleteProyecto(eliminarPro());
-				break;
-			/*case 10:
-				modificar(dep, emp);
-				break;
-			case 11:
-				modificar(emp, dep,pro);
-				break;
-			case 12:
-				modificar(pro, emp);
-				break;
-			case 13:
-				cerrar(dep, emp, pro);
-				return;*/
-			default:
-			}
-		}
+            switch (choice) {
+                case 1:
+                    saveEmpleado();
+                    break;
+                case 2:
+                    deleteEmpleado();
+                    break;
+                case 3:
+                    updateEmpleado();
+                    break;
+                case 0:
+                    return; 
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
 
-	}
-	private static void listarEmpleados() {
-		List<Empleado> empleados = controller.getEmpleados().stream()
-                .sorted(Comparator.comparing(Empleado::getNombre))
-                .collect(Collectors.toList());
-        empleados.forEach(System.out::println);
-	}
-	private static void listarDepartamentos() {
-		List<Departamento> departamentos = controller.getDepartamentos().stream()
-                .sorted(Comparator.comparing(Departamento::getNombre))
-                .collect(Collectors.toList());
-        departamentos.forEach(System.out::println);
-	}
-
-	private static Departamento eliminarDep() {
-		IO.print("UUID ? ");
-		String id = IO.readString();
-		UUID uuid=UUID.fromString(id);
-		return new Departamento(uuid);
-	}
-	private static Empleado eliminarEmp() {
-		IO.print("UUID ? ");
-		String id = IO.readString();
-		UUID uuid=UUID.fromString(id); 
-		return new Empleado(uuid);
-	}
-	private static Proyecto eliminarPro() {
-		IO.print("UUID ? ");
-		String id = IO.readString();
-		UUID uuid=UUID.fromString(id); 
-		return new Proyecto(uuid);
-	}
-	private static Proyecto anadirPro() {
-		IO.print("Nombre ? ");
-		String nombre = IO.readString();
-		return new Proyecto(nombre);
-	}
-
-	private static void anadirEmp() {
-		String nombre = IO.readString("Nombre ? ");
+    private static void saveEmpleado() {
+    	String nombre = IO.readString("Nombre ? ");
 		Double salario = IO.readDoubleOptional("Salario?: ");
-		LocalDate nacido = IO.readLocalDateOptional("Nacimiento?: ");
+		LocalDate nacido = IO.readLocalDateOptional("Nacido ? ");
 		UUID departamento = IO.readUUIDOptional("Departamento ? ");
-		Empleado empleado = new Empleado(nombre, salario,nacido, new Departamento(departamento));
-				
+		Empleado empleado;
+		if(departamento!=null) {
+			empleado = new Empleado(nombre, salario,nacido, new Departamento(departamento));
+		}else {
+			empleado = new Empleado(nombre, salario,nacido);
+		}
 		IO.println(controller.createEmpleado(empleado) ? "Insertado correctamente" :
-				 "No se ha insertado");
+				 "No se ha encontrado un empleado con el ID introducido");
+    }
+
+    private static void deleteEmpleado() {
+    	UUID id = IO.readUUID("ID:  ? ");
+		Empleado empleado = new Empleado(id);
+		
+		IO.println(controller.deleteEmpleado(empleado) ? "Eliminado correctamente" :
+			"No se ha encontrado un Empleado con el ID introducido" );
+    }
+
+    private static void updateEmpleado() {
+    	UUID id=IO.readUUID("id ?");
+    	String nombre = IO.readString("Nombre ? ");
+		Double salario = IO.readDoubleOptional("Salario?: ");
+		LocalDate nacido = IO.readLocalDateOptional("Nacido ? ");
+		UUID departamento = IO.readUUIDOptional("Departamento ? ");
+
+		Empleado empleado = new Empleado(id, nombre, salario,nacido, new Departamento(departamento));
+		IO.println(controller.updateEmpleado(empleado) ? "Actualizado correctamente"
+				: "\nRegistro no encontrado o Información no válida\n" 
+				+ "Asegúrese de:\n"
+				+ "- Haber rellenado al menos 1 campo\n"
+				+ "- Que el ID del empleado a modificar exista en la tabla empleado\n"
+				+ "- Que el ID del departamento exista en la tabla departamento");
+    }
+
+    private static void manageProyectos() {
+    	 while (true) {
+    		 System.out.println("\n--- Proyecto Gestiones ---");
+             System.out.println("1. Guardar Proyecto");
+             System.out.println("2. Borrar Proyecto");
+             System.out.println("3. Modificar Proyecto");
+             System.out.println("0. Volver");
+             System.out.print("Elige: ");
+
+             int choice = scanner.nextInt();
+             scanner.nextLine(); // Consume the newline character
+
+             switch (choice) {
+                 case 1:
+                     saveProyecto();
+                     break;
+                 case 2:
+                     deleteProyecto();
+                     break;
+                 case 3:
+                     updateProyecto();
+                     break;
+                 case 0:
+                     return; // Return to the main menu
+                 default:
+                     System.out.println("Invalid choice. Please enter a valid option.");
+             }
+         }
+    }
+
+    private static void updateProyecto() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	private static void anadirDep() {
-		// Obtenemos los datos del departamento que se quiere insertar
+	private static void deleteProyecto() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void saveProyecto() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void manageDepartamentos() {
+    	 while (true) {
+    		 System.out.println("\n--- Departamento Gestiones ---");
+             System.out.println("1. Guardar Departamento");
+             System.out.println("2. Borrar Departamento");
+             System.out.println("3. Modificar Departamento");
+             System.out.println("0. Volver");
+             System.out.print("Elige: ");
+
+             int choice = scanner.nextInt();
+             scanner.nextLine(); // Consume the newline character
+
+             switch (choice) {
+                 case 1:
+                     saveDepartamento();
+                     break;
+                 case 2:
+                     deleteDepartamento();
+                     break;
+                 case 3:
+                     updateDepartamento();
+                     break;
+                 case 0:
+                     return; // Return to the main menu
+                 default:
+                     System.out.println("Invalid choice. Please enter a valid option.");
+             }
+         }
+    }
+
+	private static void updateDepartamento() {
+		IO.print("ID ? ");
+		UUID id = IO.readUUID();
+		IO.print("Nombre ? ");
+		String nombre = IO.readStringOptional();
+		IO.print("Jefe ? ");
+		UUID jefe = IO.readUUIDOptional();
+
+		Departamento departamento = new Departamento(id, nombre, new Empleado(jefe));
+		IO.println(controller.updateDepartamento(departamento) ? "Actualizado correctamente"
+				: "\nRegistro no encontrado o Información no válida\n" 
+				+ "Asegúrese de:\n"+
+				"- Haber rellenado al menos 1 campo\n"
+				+ "- Que el ID del departamento a modificar exista en la tabla departamento\n"
+				+ "- Que el ID del jefe exista en la tabla empleado");
+	}
+
+	private static void deleteDepartamento() {
+		UUID jefe = IO.readUUID("ID Departamento ? ");
+		Departamento departamento = new Departamento(jefe);
+		
+		IO.println(controller.deleteDepartamento(departamento) ? "Eliminado correctamente" : "No se ha encontrado un Departamento con el ID introducido" );
+	}
+
+	private static void saveDepartamento() {
 		String nombre = IO.readString("Nombre ? ");
 		UUID jefe = IO.readUUIDOptional("Jefe ? ");
-
-		// Creamos el departamento y lo insertamos
 		Departamento departamento = new Departamento(nombre, new Empleado(jefe));
 				
-		// Comprobamos si se ha insertado el registro y damos feedback
-		IO.println(controller.createDepartamento(departamento) ? "Insertado correctamente" :
-				"No se ha encontrado un empleado con el ID introducido" );
-	}
-  private static void showResult(String msg) {
-		System.out.println("* " + msg);
+		IO.println(controller.createDepartamento(departamento) ? "Insertado correctamente" : "No se ha encontrado un empleado con el ID introducido");
 		
-		System.out.println("-".repeat(80));
 	}
-
 }

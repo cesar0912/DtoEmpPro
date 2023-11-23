@@ -1,38 +1,61 @@
 package models;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
-
-//import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
+@Table(name = "empleado")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "empleado")
-@NamedQuery(name = "Empleado.findAll", query = "SELECT e FROM empleado e")
-@NamedQuery(name = "Empleado.findAllWithDepartamentoInfo", query = "SELECT e, d.id, d.nombre FROM empleado e LEFT JOIN e.departamento d")
 public class Empleado {
-	
-	@Id
-	private UUID id = UUID.randomUUID();
-	private String nombre;
-	private Double salario;
-	private LocalDate nacido;
-	
-	@ManyToOne
-	@JoinColumn(name="departamento", nullable = true)
-	private Departamento departamento;
-	
-	public Empleado(String nombre, Double salario,LocalDate nacido, Departamento departamento) {
+
+    @Id
+    @Column(name = "id")
+    private UUID id;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "salario")
+    private Double salario;
+
+    @Column(name = "nacido")
+    @Temporal(TemporalType.DATE)
+    private LocalDate nacido;
+
+    @ManyToOne
+    @JoinColumn(name = "departamento", nullable = true)
+    private Departamento departamento;
+
+    @ManyToMany(mappedBy = "empleados")
+    private List<Proyecto> proyectos; 
+    public Empleado(UUID id,String nombre, Double salario,LocalDate nacido, Departamento departamento) {
+    	setId(id);
 		setNombre(nombre);
 		setSalario(salario);
 		setNacido(nacido);
 		setDepartamento(departamento);
 	}
 	
+	public Empleado(String nombre, Double salario,LocalDate nacido, Departamento departamento) {
+		setId(UUID.randomUUID());
+		setNombre(nombre);
+		setSalario(salario);
+		setNacido(nacido);
+		setDepartamento(departamento);
+	}
+	
+	public Empleado(String nombre, Double salario,LocalDate nacido) {
+		setId(UUID.randomUUID());
+		setNombre(nombre);
+		setSalario(salario);
+		setNacido(nacido);
+	}
 	public Empleado(UUID id, String nombre) {
 		setId(id);
 		setNombre(nombre);

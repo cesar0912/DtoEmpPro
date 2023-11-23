@@ -3,6 +3,9 @@ package repositories.Empleado;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 import db.HibernateManager;
 import exceptions.EmpleadoException;
 import jakarta.persistence.TypedQuery;
@@ -22,7 +25,7 @@ public class EmpRepositoryImpl implements EmpInterface{
 	}
 
 	@Override
-	public Boolean save(Empleado entity) {
+	public boolean save(Empleado entity) {
 		logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
@@ -35,17 +38,16 @@ public class EmpRepositoryImpl implements EmpInterface{
             return true;
 
         } catch (Exception e) {
-        	logger.info("Error saving employee: " + e.getMessage());
+            throw new EmpleadoException("Error al salvar empleado con uuid: " + entity.getId() + "\n" + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
             }
         }
-        return false;
 	}
 
 	@Override
-	public Boolean delete(Empleado entity) {
+	public boolean delete(Empleado entity) {
 		logger.info("delete()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();

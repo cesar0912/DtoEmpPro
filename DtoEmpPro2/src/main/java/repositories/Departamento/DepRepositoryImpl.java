@@ -1,17 +1,17 @@
 package repositories.Departamento;
 
-import db.HibernateManager;
-import exceptions.DepartamentoException;
-import jakarta.persistence.TypedQuery;
-import models.*;
-
 import java.util.List;
 import java.util.logging.Logger;
 
-public class DepRepositoryImpl implements DepInterface {
-private final Logger logger = Logger.getLogger(DepRepositoryImpl.class.getName());
+import db.HibernateManager;
+import exceptions.DepartamentoException;
+import jakarta.persistence.TypedQuery;
+import models.Departamento;
+import models.Empleado;
+
+public class DepRepositoryImpl implements DepInterface{
+	private final Logger logger = Logger.getLogger(DepRepositoryImpl.class.getName());
 	
-	@Override
 	public List<Departamento> findAll() {
 		logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
@@ -21,9 +21,8 @@ private final Logger logger = Logger.getLogger(DepRepositoryImpl.class.getName()
         hb.close();
         return list;
 	}
-
 	@Override
-	public Boolean save(Departamento entity) {
+	public boolean save(Departamento entity) {
 		logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
@@ -31,7 +30,7 @@ private final Logger logger = Logger.getLogger(DepRepositoryImpl.class.getName()
         
         try {
             Empleado jefe = null;
-            if (entity.getJefe().getId() != null) {  
+            if (entity.getJefe().getId() != null) { 
                 jefe = hb.getManager().find(Empleado.class, entity.getJefe().getId());
             }
 
@@ -59,28 +58,39 @@ private final Logger logger = Logger.getLogger(DepRepositoryImpl.class.getName()
 
 
 	@Override
-	public Boolean delete(Departamento entity) {
-		logger.info("delete()");
-        HibernateManager hb = HibernateManager.getInstance();
-        hb.open();
-        try {
-            hb.getTransaction().begin();
-            entity = hb.getManager().find(Departamento.class, entity.getId());
-            hb.getManager().remove(entity);
-            hb.getTransaction().commit();
-            hb.close();
-            return true;
-        } catch (Exception e) {
-            throw new DepartamentoException("Error al eliminar departamento con uuid: " + entity.getId() + " - " + e.getMessage());
-        } finally {
-            if (hb.getTransaction().isActive()) {
-                hb.getTransaction().rollback();
-            }
-        }
+	public boolean delete(Departamento entity) {
+	    logger.info("delete()");
+	    HibernateManager hb = HibernateManager.getInstance();
+	    hb.open();
+	    try {
+	        hb.getTransaction().begin();
+
+	        // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
+	        entity = hb.getManager().find(Departamento.class, entity.getId());
+
+	        // Actualizar los empleados estableciendo el departamento a null
+	        for (Empleado e : entity.getEmpleados()) {
+	            e.setDepartamento(null);
+	            hb.getManager().persist(e);
+	        }
+
+	        hb.getTransaction().commit();
+
+	        hb.getTransaction().begin();
+
+	        hb.getManager().remove(entity);
+
+	        hb.getTransaction().commit();
+
+	        return true;
+	    } catch (Exception e) {
+	        throw new DepartamentoException("Error al eliminar tenista con uuid: " + entity.getId() + " - " + e.getMessage());
+	    } finally {
+	        if (hb.getTransaction().isActive()) {
+	            hb.getTransaction().rollback();
+	        }
+	        hb.close();
+	    }
 	}
 
 }
-	
-
-
-
