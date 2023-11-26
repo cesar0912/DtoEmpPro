@@ -89,12 +89,32 @@ public class OficinaController {
 
     public Boolean updateProyecto(Proyecto pro) {
         logger.info("Actualizando Proyecto con uuid: " + pro.getId());
-        return proRepository.save(pro);
+        return proRepository.update(pro);
     }
 
     public Boolean deleteProyecto(Proyecto pro) {
         logger.info("Eliminando Proyecto con uuid: " + pro.getId());
         return proRepository.delete(pro);
     }
+
+	public boolean anadirEmpPro(Proyecto proyecto, Empleado empleado) {
+		logger.info("Añadiendo Empleado a un Proyecto con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return proRepository.anadir(proyecto,empleado);
+	}
+
+	public boolean deleteEmpPro(Proyecto proyecto, Empleado empleado) {
+		logger.info("Eliminando Empleado a un Proyecto con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return proRepository.eliminar(proyecto,empleado);
+	}
+
+	public boolean deleteProEmp(Proyecto proyecto, Empleado empleado) {
+		logger.info("Eliminando un Proyecto a un Empleado con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return empRepository.eliminar(proyecto,empleado);
+	}
+
+	public boolean anadirProEmp(Proyecto proyecto, Empleado empleado) {
+		logger.info("Añadiendo un Proyecto a un Empleado con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return empRepository.anadir(proyecto,empleado);
+	}
 
 }

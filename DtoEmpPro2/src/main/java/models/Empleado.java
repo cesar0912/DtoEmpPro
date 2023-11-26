@@ -73,13 +73,35 @@ public class Empleado {
 	public Empleado(UUID id) {
 		setId(id);
 	}
-	
+	public void add(Proyecto p) {
+		proyectos.add(p);
+	}
+	public void remove(Proyecto p) {
+		proyectos.remove(p);
+	}
 	@Override
 	public String toString() {
-		String format = "[ %s ][ %s ][ %s ][ %s ]";
-		String salarioStr = (salario != null) ? Double.toString(this.salario) : "N/A";
-		String departamentoInfo = (departamento != null) ? departamento.getId() + " | " + departamento.getNombre() : "N/A";
-	    return String.format(format, this.id.toString(), this.nombre, salarioStr, departamentoInfo);
+	    StringBuilder proyectosStr = new StringBuilder("[ ");
+	    
+	    if (proyectos != null && !proyectos.isEmpty()) {
+	        for (Proyecto proyecto : proyectos) {
+	            proyectosStr.append(proyecto.getId()).append(" | ").append(proyecto.getNombre()).append(", ");
+	        }
+	        proyectosStr.setLength(proyectosStr.length() - 2);  // Elimina la coma y el espacio al final
+	    } else {
+	        proyectosStr.append("N/A");
+	    }
+	    
+	    proyectosStr.append(" ]");
+
+	    String format = "[ %s ][ %s ][ %s ][ %s ][ %s ]";
+	    String salarioStr = (salario != null) ? Double.toString(this.salario) : "N/A";
+	    String departamentoInfo = (departamento != null) ? departamento.getId() + " | " + departamento.getNombre() : "N/A";
+
+	    return String.format(format, this.id.toString(), this.nombre, salarioStr, departamentoInfo, proyectosStr.toString());
 	}
+
+
+
 
 }

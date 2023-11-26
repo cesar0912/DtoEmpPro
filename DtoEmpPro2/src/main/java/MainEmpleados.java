@@ -6,6 +6,7 @@ import controllers.OficinaController;
 import io.IO;
 import models.Departamento;
 import models.Empleado;
+import models.Proyecto;
 
 public class MainEmpleados {
 	static void manageEmpleados(OficinaController controller,Scanner scanner) {
@@ -16,6 +17,8 @@ public class MainEmpleados {
 			System.out.println("3. Guardar Empleado");
 			System.out.println("4. Borrar Empleado");
 			System.out.println("5. Modificar Empleado");
+			System.out.println("6. Añadir un proyecto a un Empleado");
+			System.out.println("7. Eliminar un proyecto de un Empleado");
 			
 			System.out.println("0. Volver");
 			System.out.print("Elige: ");
@@ -40,13 +43,49 @@ public class MainEmpleados {
 			case 5:
 				updateEmpleado(controller);
 				break;
-			
+			case 6:
+				anadir(controller);
+				break;
+			case 7:
+				eliminar(controller);
+				break;
 			case 0:
 				return;
 			default:
 				System.out.println("Invalid choice. Please enter a valid option.");
 			}
 		}
+	}
+
+	private static void eliminar(OficinaController controller) {
+		IO.print("Empleado ? ");
+		UUID idEmp = IO.readUUIDOptional();
+		IO.print("ID del Proyecto ? ");
+		UUID id = IO.readUUID();
+		
+		if(id!=null && idEmp!=null) {
+		IO.println(controller.deleteProEmp(new Proyecto(id),new Empleado(idEmp)) ? "Eliminado correctamente"
+				: "\nRegistro no encontrado o Información no válida\n");
+		}else {
+			System.out.println("Registros vacios");
+		}
+		
+		
+	}
+
+	private static void anadir(OficinaController controller) {
+		IO.print("Empleado ? ");
+		UUID idEmp = IO.readUUIDOptional();
+		IO.print("ID del Proyecto ? ");
+		UUID id = IO.readUUID();
+		
+		if(id!=null && idEmp!=null) {
+		IO.println(controller.anadirProEmp(new Proyecto(id),new Empleado(idEmp)) ? "Añadido correctamente"
+				: "\nRegistro no encontrado o Información no válida\n");
+		}else {
+			System.out.println("Registros vacios");
+		}
+		
 	}
 
 	private static void buscarEmpleado(OficinaController controller) {

@@ -43,6 +43,7 @@ public class Proyecto {
 	}
 	
 	public Proyecto(String nombre) {
+		setId(UUID.randomUUID());
 		setNombre(nombre);
 	}
 
@@ -50,10 +51,26 @@ public class Proyecto {
 		setId(id);
 		setNombre(nombre);
 	}
-	
+	public void add(Empleado e) {
+		empleados.add(e);
+	}
+	public void remove(Empleado e) {
+		empleados.remove(e);
+	}
 	@Override
 	public String toString() {
-	    String format = "[ %-36s ][ %-20s ]";
-		return String.format(format, this.id.toString(), this.nombre);
+	    StringBuilder empleadosStr = new StringBuilder("[ ");
+	    for (Empleado empleado : empleados) {
+	        empleadosStr.append(empleado.getId()).append(" | ").append(empleado.getNombre()).append(", ");
+	    }
+	    if (!empleados.isEmpty()) {
+	        empleadosStr.setLength(empleadosStr.length() - 2);  // Elimina la coma y el espacio al final
+	    }
+	    empleadosStr.append(" ]");
+	 
+
+	    return String.format("[ %s ][ %s ][ %s ]", this.id.toString(), this.nombre, empleadosStr.toString());
 	}
+
+
 }

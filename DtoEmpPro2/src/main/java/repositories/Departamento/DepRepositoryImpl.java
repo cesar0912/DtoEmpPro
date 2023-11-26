@@ -64,6 +64,7 @@ public class DepRepositoryImpl implements DepInterface{
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
             }
+            hb.close();
         }
 	}
 	

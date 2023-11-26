@@ -10,7 +10,7 @@
         <!-- Hibernate properties -->
         <properties>
             <!-- Database connection properties -->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://172.20.96.1:3301/gestionProyecto" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://192.168.135.232:3301/gestionProyecto" />
             <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
             <property name="jakarta.persistence.jdbc.user" value="root" />
             <property name="jakarta.persistence.jdbc.password" value="toor" />

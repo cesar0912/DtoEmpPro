@@ -17,15 +17,20 @@ import models.Proyecto;
 public class ProRepositoryImpl implements ProInterface{
 	private final Logger logger = Logger.getLogger(ProRepositoryImpl.class.getName());
 	
-	@Override
 	public List<Proyecto> findAll() {
-		logger.info("findAll()");
-        HibernateManager hb = HibernateManager.getInstance();
-        hb.open();
-        TypedQuery<Proyecto> query = hb.getManager().createNamedQuery("Proyecto.findAll", Proyecto.class);
-        List<Proyecto> list = query.getResultList();
-        hb.close();
-        return list;
+	    HibernateManager hb = HibernateManager.getInstance();
+
+	    // Abre la transacción
+	    hb.open();
+
+	    TypedQuery<Proyecto> proyectos = hb.getManager().createNamedQuery("Proyecto.findAll", Proyecto.class);
+	    List<Proyecto> p=proyectos.getResultList();
+	    for (Proyecto proyecto : p) {
+	        proyecto.getEmpleados().size(); 
+	    }
+	    hb.close();
+
+	    return p;
 	}
 	@Override
     public Optional<Proyecto> findById(UUID uuid) {
@@ -50,7 +55,7 @@ public class ProRepositoryImpl implements ProInterface{
             return true;
 
         } catch (Exception e) {
-            throw new ProyectoException("Error al salvar raqueta con uuid: " + entity.getId() + "\n" + e.getMessage());
+            throw new ProyectoException("Error al guardar proyecto con uuid: " + entity.getId() + "\n" + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
@@ -65,13 +70,18 @@ public class ProRepositoryImpl implements ProInterface{
         hb.getTransaction().begin();
 
         try {
-            hb.getManager().merge(entity);
+        	if(hb.getManager().find(Proyecto.class, entity.getId())==null) {
+        		throw new ProyectoException("Error al salvar raqueta con uuid: " + entity.getId() + "\n");
+        	}
+        	Proyecto p=hb.getManager().find(Proyecto.class, entity.getId());
+        	p.setNombre(entity.getNombre());
+            hb.getManager().merge(p);
             hb.getTransaction().commit();
             hb.close();
             return true;
 
         } catch (Exception e) {
-            throw new ProyectoException("Error al salvar raqueta con uuid: " + entity.getId() + "\n" + e.getMessage());
+            throw new ProyectoException("Error al modificar proyecto con uuid: " + entity.getId() + "\n" + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
@@ -95,6 +105,48 @@ public class ProRepositoryImpl implements ProInterface{
             return true;
         } catch (Exception e) {
             throw new DepartamentoException("Error al eliminar Proyecto con uuid: " + entity.getId() + " - " + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+	}
+	public boolean anadir(Proyecto proyecto, Empleado empleado) {
+		logger.info("añadirEmp()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        try {
+            hb.getTransaction().begin();
+            proyecto = hb.getManager().find(Proyecto.class, proyecto.getId());
+            empleado=hb.getManager().find(Empleado.class,empleado.getId());
+            proyecto.add(empleado);
+            hb.getManager().merge(proyecto);
+            hb.getTransaction().commit();
+            hb.close();
+            return true;
+        } catch (Exception e) {
+            throw new DepartamentoException("Error al añadir empleado a Proyecto con uuid: " + proyecto.getId() + " - " + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+	}
+	public boolean eliminar(Proyecto proyecto, Empleado empleado) {
+		logger.info("añadirEmp()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        try {
+            hb.getTransaction().begin();
+            proyecto = hb.getManager().find(Proyecto.class, proyecto.getId());
+            empleado=hb.getManager().find(Empleado.class,empleado.getId());
+            proyecto.remove(empleado);
+            hb.getManager().merge(proyecto);
+            hb.getTransaction().commit();
+            hb.close();
+            return true;
+        } catch (Exception e) {
+            throw new DepartamentoException("Error al eliminar empleado de un Proyecto con uuid: " + proyecto.getId() + " - " + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
