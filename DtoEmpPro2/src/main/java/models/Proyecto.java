@@ -1,28 +1,29 @@
 package models;
 
-import java.util.Date;
-import java.util.HashSet;
-
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-@AllArgsConstructor
+@Entity
+@Table(name = "proyectos")
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "hib_proyecto")
+@AllArgsConstructor
 @NamedQuery(name = "Proyecto.findAll", query = "SELECT p FROM Proyecto p")
 public class Proyecto {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
 
@@ -31,34 +32,45 @@ public class Proyecto {
 
     @ManyToMany
     @JoinTable(
-        name = "hib_empleado_hib_proyecto",
+        name = "proyecto_empleado",
         joinColumns = @JoinColumn(name = "proyecto_id"),
         inverseJoinColumns = @JoinColumn(name = "empleado_id")
     )
-    private Set<Empleado> empleados = new HashSet<>();
-
-
-    public Proyecto(String nombre, Set<Empleado> empleados) {
-        this.id = UUID.randomUUID();
-        this.nombre = nombre;
-        this.empleados = new HashSet<>();
-    }
-    public Proyecto(String nombre) {
-        this.id = UUID.randomUUID();
-        this.nombre = nombre;
-        this.empleados = new HashSet<>();
-    }
-    public Proyecto(UUID id) {
-        this.id = id;
-    }
+    private List<Empleado> empleados;
 	
-	public void agregarEmpleado(Empleado empleado) {
-	    empleados.add(empleado);
-	    empleado.getProyectos().add(this);
+	public Proyecto(UUID id) {
+		setId(id);
+	}
+	
+	public Proyecto(String nombre) {
+		setId(UUID.randomUUID());
+		setNombre(nombre);
 	}
 
-	public void quitarEmpleado(Empleado empleado) {
-	    empleados.remove(empleado);
-	    empleado.getProyectos().remove(this);
+	public Proyecto(UUID id, String nombre) {
+		setId(id);
+		setNombre(nombre);
 	}
+	public void add(Empleado e) {
+		empleados.add(e);
+	}
+	public void remove(Empleado e) {
+		empleados.remove(e);
+	}
+	@Override
+	public String toString() {
+	    StringBuilder empleadosStr = new StringBuilder("[ ");
+	    for (Empleado empleado : empleados) {
+	        empleadosStr.append(empleado.getId()).append(" | ").append(empleado.getNombre()).append(", ");
+	    }
+	    if (!empleados.isEmpty()) {
+	        empleadosStr.setLength(empleadosStr.length() - 2);  // Elimina la coma y el espacio al final
+	    }
+	    empleadosStr.append(" ]");
+	 
+
+	    return String.format("[ %s ][ %s ][ %s ]", this.id.toString(), this.nombre, empleadosStr.toString());
+	}
+
+
 }

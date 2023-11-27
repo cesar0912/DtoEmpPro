@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 public class HibernateManager {
-	private static HibernateManager controller;
+    private static HibernateManager controller;
 
     // Creamos las EntityManagerFactory para manejar las entidades y transacciones
     private EntityManagerFactory entityManagerFactory;
@@ -35,6 +35,25 @@ public class HibernateManager {
         entityManagerFactory.close();
     }
 
+    public EntityManager openSession() {
+        return entityManagerFactory.createEntityManager();
+    }
 
+    public void closeSession(EntityManager entityManager) {
+        entityManager.close();
+    }
 
+    public void beginTransaction() {
+        transaction.begin();
+    }
+
+    public void commitTransaction() {
+        transaction.commit();
+    }
+
+    public void rollbackTransaction() {
+        if (transaction != null && transaction.isActive()) {
+            transaction.rollback();
+        }
+    }
 }

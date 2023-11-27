@@ -1,5 +1,8 @@
 package exceptions;
 
-public class EmpleadoException {
-
+@SuppressWarnings("serial")
+public class EmpleadoException extends RuntimeException {
+    public EmpleadoException(String message) {
+        super(message);
+    }
 }

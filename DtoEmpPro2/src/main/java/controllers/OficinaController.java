@@ -30,20 +30,18 @@ public class OficinaController {
         logger.info("Obteniendo Departamentos");
         return depRepository.findAll();
     }
-
-    public Departamento createDepartamento(Departamento dep) {
+	public Optional<Departamento> getDepartamentoPorId(UUID id) {
+        logger.info("Obteniendo Departamentos");
+        return depRepository.findById(id);
+    }
+    public boolean createDepartamento(Departamento dep) {
         logger.info("Creando Departamento");
         return depRepository.save(dep);
     }
 
-    public Optional<Departamento> getDepartamentoById(UUID uuid) {
-        logger.info("Obteniendo Departamento con uuid: " + uuid);
-        return depRepository.findById(uuid);
-    }
-
-    public Departamento updateDepartamento(Departamento dep) {
+    public Boolean updateDepartamento(Departamento dep) {
         logger.info("Actualizando Departamento con uuid: " + dep.getId());
-        return depRepository.save(dep);
+        return depRepository.update(dep);
     }
 
     public Boolean deleteDepartamento(Departamento dep) {
@@ -55,20 +53,19 @@ public class OficinaController {
         logger.info("Obteniendo Empleados");
         return empRepository.findAll();
     }
-
-    public Empleado createEmpleado(Empleado emp) {
+    public Optional<Empleado> getEmpleadoPorId(UUID id) {
+        logger.info("Obteniendo Empleado");
+        return empRepository.findById(id);
+    }
+    public Boolean createEmpleado(Empleado emp) {
         logger.info("Creando Empleado");
         return empRepository.save(emp);
     }
 
-    public Optional<Empleado> getEmpleadoById(UUID uuid) {
-        logger.info("Obteniendo Empleado con uuid: " + uuid);
-        return empRepository.findById(uuid);
-    }
 
-    public Empleado updateEmpleado(Empleado emp) {
+    public Boolean updateEmpleado(Empleado emp) {
         logger.info("Actualizando Empleado con uuid: " + emp.getId());
-        return empRepository.save(emp);
+        return empRepository.update(emp);
     }
 
     public Boolean deleteEmpleado(Empleado emp) {
@@ -79,25 +76,45 @@ public class OficinaController {
         logger.info("Obteniendo Proyectos");
         return proRepository.findAll();
     }
+    public Optional<Proyecto> getProyectoPorId(UUID id) {
+        logger.info("Obteniendo Proyecto");
+        return proRepository.findById(id);
+    }
 
-    public Proyecto createProyecto(Proyecto pro) {
+    public Boolean createProyecto(Proyecto pro) {
         logger.info("Creando Proyecto");
         return proRepository.save(pro);
     }
 
-    public Optional<Proyecto> getProyectoById(UUID uuid) {
-        logger.info("Obteniendo Proyecto con uuid: " + uuid);
-        return proRepository.findById(uuid);
-    }
 
-    public Proyecto updateProyecto(Proyecto pro) {
+    public Boolean updateProyecto(Proyecto pro) {
         logger.info("Actualizando Proyecto con uuid: " + pro.getId());
-        return proRepository.save(pro);
+        return proRepository.update(pro);
     }
 
     public Boolean deleteProyecto(Proyecto pro) {
         logger.info("Eliminando Proyecto con uuid: " + pro.getId());
         return proRepository.delete(pro);
     }
+
+	public boolean anadirEmpPro(Proyecto proyecto, Empleado empleado) {
+		logger.info("Añadiendo Empleado a un Proyecto con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return proRepository.anadir(proyecto,empleado);
+	}
+
+	public boolean deleteEmpPro(Proyecto proyecto, Empleado empleado) {
+		logger.info("Eliminando Empleado a un Proyecto con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return proRepository.eliminar(proyecto,empleado);
+	}
+
+	public boolean deleteProEmp(Proyecto proyecto, Empleado empleado) {
+		logger.info("Eliminando un Proyecto a un Empleado con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return empRepository.eliminar(proyecto,empleado);
+	}
+
+	public boolean anadirProEmp(Proyecto proyecto, Empleado empleado) {
+		logger.info("Añadiendo un Proyecto a un Empleado con uuid: " + proyecto.getId()+"emp: "+empleado.getId());
+        return empRepository.anadir(proyecto,empleado);
+	}
 
 }

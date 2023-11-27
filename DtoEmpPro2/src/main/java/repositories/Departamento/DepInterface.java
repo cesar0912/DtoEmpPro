@@ -7,4 +7,5 @@ import repositories.CrudRepository;
 
 public interface DepInterface extends CrudRepository<Departamento, UUID>{
 
+
 }
