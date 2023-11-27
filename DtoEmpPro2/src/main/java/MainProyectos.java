@@ -1,10 +1,8 @@
-import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.UUID;
 
 import controllers.OficinaController;
 import io.IO;
-import models.Departamento;
 import models.Empleado;
 import models.Proyecto;
 

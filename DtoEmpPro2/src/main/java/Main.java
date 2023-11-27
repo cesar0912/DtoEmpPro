@@ -1,12 +1,6 @@
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 import controllers.OficinaController;
-import io.IO;
-import models.Departamento;
-import models.Empleado;
 import repositories.Departamento.DepRepositoryImpl;
 import repositories.Empleado.EmpRepositoryImpl;
 import repositories.Proyecto.ProRepositoryImpl;

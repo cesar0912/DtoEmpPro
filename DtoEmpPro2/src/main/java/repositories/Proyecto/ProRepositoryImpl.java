@@ -7,10 +7,8 @@ import java.util.logging.Logger;
 
 import db.HibernateManager;
 import exceptions.DepartamentoException;
-import exceptions.EmpleadoException;
 import exceptions.ProyectoException;
 import jakarta.persistence.TypedQuery;
-import models.Departamento;
 import models.Empleado;
 import models.Proyecto;
 
@@ -20,7 +18,6 @@ public class ProRepositoryImpl implements ProInterface{
 	public List<Proyecto> findAll() {
 	    HibernateManager hb = HibernateManager.getInstance();
 
-	    // Abre la transacción
 	    hb.open();
 
 	    TypedQuery<Proyecto> proyectos = hb.getManager().createNamedQuery("Proyecto.findAll", Proyecto.class);
@@ -64,7 +61,7 @@ public class ProRepositoryImpl implements ProInterface{
 	}
 	@Override
 	public boolean update(Proyecto entity) {
-		logger.info("save()");
+		logger.info("update()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         hb.getTransaction().begin();
@@ -133,7 +130,7 @@ public class ProRepositoryImpl implements ProInterface{
         }
 	}
 	public boolean eliminar(Proyecto proyecto, Empleado empleado) {
-		logger.info("añadirEmp()");
+		logger.info("eliminarEmp()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         try {

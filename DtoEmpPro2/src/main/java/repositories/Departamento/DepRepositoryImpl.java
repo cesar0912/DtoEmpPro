@@ -75,7 +75,7 @@ public class DepRepositoryImpl implements DepInterface{
 	    try {
 	        hb.getTransaction().begin();
 	        if(hb.getManager().find(Departamento.class, departamento.getId())==null) {
-	        	throw new DepartamentoException("Error al actualizar departamento. El jefe no existe.");
+	        	throw new DepartamentoException("Error al actualizar departamento.");
 	        }
 	        // Verifica si el jefe existe
 	        if (departamento.getJefe() != null && departamento.getJefe().getId() != null) {
@@ -130,7 +130,7 @@ public class DepRepositoryImpl implements DepInterface{
 
 	        return true;
 	    } catch (Exception e) {
-	        throw new DepartamentoException("Error al eliminar tenista con uuid: " + entity.getId() + " - " + e.getMessage());
+	        throw new DepartamentoException("Error al eliminar Departamento con uuid: " + entity.getId() + " - " + e.getMessage());
 	    } finally {
 	        if (hb.getTransaction().isActive()) {
 	            hb.getTransaction().rollback();

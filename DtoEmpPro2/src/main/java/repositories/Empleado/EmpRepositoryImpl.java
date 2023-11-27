@@ -21,7 +21,6 @@ public class EmpRepositoryImpl implements EmpInterface{
 	public List<Empleado> findAll() {
 	    HibernateManager hb = HibernateManager.getInstance();
 
-	    // Abre la transacción
 	    hb.open();
 
 	    TypedQuery<Empleado> empleados = hb.getManager().createNamedQuery("Empleado.findAll", Empleado.class);
@@ -71,7 +70,6 @@ public class EmpRepositoryImpl implements EmpInterface{
             }
         }
 	}
-	//caso de que el empleado actualizado sea jefe y se le pase el mismo departamento
 	public boolean update(Empleado entity) {
 		logger.info("update()");
         HibernateManager hb = HibernateManager.getInstance();
@@ -147,13 +145,21 @@ public class EmpRepositoryImpl implements EmpInterface{
 	        }
 
 	        entity = hb.getManager().find(Empleado.class, entity.getId());
+	        List<Proyecto> proyectos =entity.getProyectos();
+	        for(Proyecto p: proyectos) {
+	        	p.remove(entity);
+	        	hb.getManager().merge(p);
+	        	hb.getTransaction().commit();
+	        	hb.getManager().clear();
+	        	hb.getTransaction().begin();
+	        }
+	        entity = hb.getManager().find(Empleado.class, entity.getId());
 	        hb.getManager().remove(entity);
-
 	        hb.getTransaction().commit();
 
 	        return true;
 	    } catch (Exception e) {
-	        throw new DepartamentoException("Error al eliminar tenista con uuid: " + entity.getId() + " - " + e.getMessage());
+	        throw new DepartamentoException("Error al eliminar Empleado con uuid: " + entity.getId() + " - " + e.getMessage());
 	    } finally {
 	        if (hb.getTransaction().isActive()) {
 	            hb.getTransaction().rollback();
@@ -162,7 +168,7 @@ public class EmpRepositoryImpl implements EmpInterface{
 	    }
 	}
 	public boolean anadir(Proyecto proyecto, Empleado empleado) {
-		logger.info("añadirEmp()");
+		logger.info("añadirPro()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         try {
@@ -175,7 +181,7 @@ public class EmpRepositoryImpl implements EmpInterface{
             hb.close();
             return true;
         } catch (Exception e) {
-            throw new DepartamentoException("Error al añadir empleado a Proyecto con uuid: " + proyecto.getId() + " - " + e.getMessage());
+            throw new DepartamentoException("Error al añadir Proyecto a un Empleado con uuid: " + proyecto.getId() + " - " + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
@@ -183,7 +189,7 @@ public class EmpRepositoryImpl implements EmpInterface{
         }
 	}
 	public boolean eliminar(Proyecto proyecto, Empleado empleado) {
-		logger.info("añadirEmp()");
+		logger.info("EliminarPro()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         try {
@@ -196,7 +202,7 @@ public class EmpRepositoryImpl implements EmpInterface{
             hb.close();
             return true;
         } catch (Exception e) {
-            throw new DepartamentoException("Error al eliminar empleado de un Proyecto con uuid: " + proyecto.getId() + " - " + e.getMessage());
+            throw new DepartamentoException("Error al eliminar Proyecto de un Empleado con uuid: " + proyecto.getId() + " - " + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
